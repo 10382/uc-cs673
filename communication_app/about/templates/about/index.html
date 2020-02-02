@@ -1,0 +1,58 @@
+{% extends "chat/base.html" %}
+{% block content %}
+<body>
+    <div class="ss" style="color:#FFFFFF">
+    <h1 style="color:#FFFFFF">About</h1>
+    <p>Project for BU MET CS 673.</p>
+    </div>
+
+    <section id="about" class="about-section">
+      <div class="container" style="color:#FFFFFF">
+        <header class="text-center">
+          <h2 data-animate="fadeInDown" class="title" style="color:#FFFFFF">Project technology</h2>
+        </header>
+        <div class="row">
+          <div data-animate="fadeInUp" class="col-lg-6">
+            <p><strong>Sufficiency</strong> - handles the user requirements. This is a top priority.</p>
+            <p><strong>Understandability</strong> - can be understood by the intended audience.</p>
+            <p><strong>Modularity</strong> - divided into well-defined parts. This facilitates code re-use for other Django projects.</p>
+            <p><strong>Flexibility</strong> - can be readily modified to handle changes in requirements or changes in features. This is imperative as we add new features in the development process.</p>
+          </div>
+          <div data-animate="fadeInUp" class="col-lg-6">
+            <div class="skill-item">
+              <div class="progress-title">boostrap</div>
+              <div class="progress">
+                <div role="progressbar" style="width: 60%" aria-valuenow="0" aria-valuemin="60" aria-valuemax="100" class="progress-bar progress-bar-skill1"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <div class="progress-title">Javascript</div>
+              <div class="progress">
+                <div role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="60" aria-valuemax="100" class="progress-bar progress-bar-skill2"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <div class="progress-title">Django-channels</div>
+              <div class="progress">
+                <div role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" class="progress-bar progress-bar-skill3"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <div class="progress-title">Django</div>
+              <div class="progress">
+                <div role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" class="progress-bar progress-bar-skill4"></div>
+              </div>
+            </div>
+            <div class="skill-item">
+              <div class="progress-title">Redis</div>
+              <div class="progress">
+                <div role="progressbar" style="width: 70%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" class="progress-bar progress-bar-skill5"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+{% endblock content %}

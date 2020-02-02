@@ -1,0 +1,207 @@
+<!-- chat/templates/chat/room.html -->
+{% extends "chat/base.html" %}
+{% block content %}
+
+<body>
+
+
+<div class="container">
+<div class="messaging">
+        <div class="wkspace">
+            <h2 id="workH">Enter a Workspace</h2>
+            <input id="room-name-input" type="text"/>
+            <button id="room-name-submit" class="btn btn-outline-info" type="submit">Enter</button>
+            <br></br>
+            <br></br>
+            <br></br>
+        </div> 
+        
+       
+      <div class="inbox_msg">
+        <div class="inbox_people">
+          <div class="headind_srch">
+            <div class="recent_heading">
+              <h4>Friend List</h4>
+            </div>
+            <div class="srch_bar">
+              <div class="stylish-input-group">
+                <span class="input-group-addon">
+                </span> </div>
+            </div>
+          </div>
+          
+          
+          
+          <div class="inbox_chat">
+            <br>
+            <h2><h2>
+            {% for user in friends %}
+                
+              <div class="chat_list">
+                <div class="chat_people">
+                  <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                  <div class="chat_ib">
+                    
+                    <button id="{{ user.username }}" class="nameOfContact" type="submit"">
+                    <h3>{{ user.username }}</h3>
+                    </button>
+
+                    <a href="{% url 'chat:change_friends' operation='remove' pk=user.pk room_name=room_name_json %}">
+                    <button type="button" class="remove">remove</button>
+                    </a>  
+                  </div>
+                </div>
+              </div> 
+            {% endfor %}   
+            <span>  </span>
+            <h3>   Others Friends
+            </h3>
+            {% for user in users %}
+              {% if not user in friends %}
+              <div class="chat_list">
+                <div class="chat_people">
+                  <div class="chat_img"> <a href="{% url 'users:view_profile_with_pk' pk=user.pk %}">
+                   <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil">  </a> </div>
+                  <div class="chat_ib">
+                    <h3>{{ user.username }}</h3>
+                    <a href="{% url 'chat:change_friends' operation='add' pk=user.pk room_name=room_name_json %}">
+                    <button type="button" class="friends_add">add</button>
+                    </a>  
+                  </div>
+                </div>
+              </div> 
+            {% endif %}
+            {% endfor %}           
+          </div>
+          </div>
+
+
+        <div class="mesgs">
+          <div class="msg_history">
+            <div class="incoming_msg">
+              {% for i in prev_messages %}
+              <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+              <div class="received_msg">
+                <div class="received_withd_msg">
+                   <p> {{ i.sender_user_name }} : {{ i.content }}</p>
+                   <span class="time_date"> {{ i.sent_date }}</span>
+              </div>
+            </div>
+            {% endfor %}   
+        </div>        
+       <div class="type_msg">
+          <div class="input_msg_write">
+             <input id="chat-message-input" type="text" class="write_msg" placeholder="Type a message"/>
+              <button class="msg_send_btn" type="button" id="chat-message-submit"><i class="fa fa-paper-plane-o" aria-hidden="true"></i></button>
+          </div>
+       </div>
+ 
+      </div>
+          
+</div>  
+
+
+</body>
+
+
+       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+        
+<script>
+    var roomName = {{ room_name_json }}; // store roomName as room_name_json
+
+    var username = '{{user.username}}'; 
+
+    var chatSocket = new WebSocket( // create new WebSocket object chatSocket when render room.html
+        'ws://' + window.location.host + // create url to connect to
+        '/ws/chat/' + roomName + '/');
+
+    chatSocket.onmessage = function(e) { // when chatSocket receives a message event
+        var data = JSON.parse(e.data); // get message event data
+        var message = data['message']; // from data get message
+        var userN = data['username']; // from data get username
+        
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        
+        today = mm + '/' + dd + '/' + yyyy;
+
+        Date.shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        function short_months(dt)
+           { 
+         return Date.shortMonths[dt.getMonth()]; 
+           }      
+        dt = new Date(); 
+
+        control = '<div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div> ' +      
+              '<div class="received_msg"> ' +  
+                '<div class="received_withd_msg">' +
+                  '<p>' + userN + ': ' +  message + '</p>' +   
+                  '<span class="time_date">' + short_months(dt) +'. ' + dd + ' ' + yyyy + '</span>' + '</div>' + 
+                  '</div>'
+
+        setTimeout(
+        function(){                        
+            $(".incoming_msg").append(control).scrollTop($(".msg_history").prop('scrollHeight'));
+            
+        });                      
+        
+    };
+    
+    
+
+    chatSocket.onclose = function(e) { // when chatSocket closes
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) { // when key is pressed
+        if (e.keyCode === 13) { // if user presses enter key
+            document.querySelector('#chat-message-submit').click();
+             location.reload(); // force onclick event
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) { // onclick event (when user clicks send button)
+        var messageInputDom = document.querySelector('#chat-message-input'); // get value from chat-message-input text box
+        var message = messageInputDom.value;
+        var my_message = JSON.stringify({'message': message, 'name': '{{user.username}}'}) // convert to JSON
+        chatSocket.send(my_message); // send message (data) to server over webSocket
+        messageInputDom.value = ''; // reset value of input to empty string
+         location.reload();
+    };
+    
+    hashCode = function(s){
+  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
+}
+            $(document).ready(function () {
+             $(".nameOfContact").click(function() {  
+              var item_id = $(this).data('item-id');
+               console.log('asdfasdf')
+               console.log($(this).attr('id'));
+               var roomName = hashCode($(this).attr('id') + '{{user.username}}');
+              
+                window.location.pathname = '/chat/' + roomName + '/';        
+             });
+            });
+            
+                        document.querySelector('#room-name-input').focus();
+            document.querySelector('#room-name-input').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#room-name-submit').click();
+                }
+            };
+            
+            document.querySelector('#room-name-submit').onclick = function(e) {
+                var roomName = document.querySelector('#room-name-input').value;
+                window.location.pathname = '/chat/' + roomName + '/';
+            };
+           
+    
+</script>
+{% endblock content %}
+
